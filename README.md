@@ -1,244 +1,117 @@
-\# WinCrashTrace
+# WinCrashTrace
 
-
-
-\*\*WinCrashTrace\*\* is a PowerShell utility that generates a \*\*Windows Support Bundle\*\* designed for root cause analysis of operating system crashes.  
-
+**WinCrashTrace** is a PowerShell utility that generates a **Windows Support Bundle** designed for root cause analysis of operating system crashes.  
 It collects system information, crash events, hardware errors, driver versions, installed updates, and crash dump metadata into a single compressed archive.  
-
-
 
 The resulting ZIP file can be attached directly to a vendor support case (e.g. Dell, Microsoft).
 
+---
 
+## Features
+
+- Collects:
+  - System information (hardware, BIOS, OS build, uptime)  
+  - Crash events (Kernel-Power 41, BugCheck 1001, Unexpected Shutdown 6008)  
+  - Hardware error events (WHEA, HAL, TPM)  
+  - Crash dump metadata (minidumps and MEMORY.DMP)  
+  - Driver inventory  
+  - Installed hotfixes and updates  
+
+- Generates:
+  - **SupportReport.txt** – consolidated human‑readable report with auto‑generated summary and raw logs  
+  - **CrashEvents.csv** – structured export of crash‑related events  
+  - **CrashDumps.csv** – dump file metadata  
+  - **Drivers.csv** – driver list  
+  - **Hotfixes.csv** – applied updates  
+
+- Includes an auto‑generated **RCA summary section** with:
+  - Crash count, first/last crash timestamp, and observation span  
+  - Presence of hardware/WHEA errors  
+  - Crash dump availability  
+  - BIOS age check vs. current date  
+
+- Creates a single ZIP bundle in the user’s **Downloads** folder.
 
 ---
 
+## Usage
 
-
-\## Quick Run (One‑Liner)
-
-
-
-You can run \*\*WinCrashTrace\*\* directly from GitHub without downloading the repository.  
-
-Open an \*\*Administrator PowerShell\*\* window and execute:
-
-
+1. Download or clone the repository containing `WinCrashTrace.ps1`.  
+2. Open PowerShell with Administrator rights.  
+3. Run the script:
 
 ```powershell
+.\WinCrashTrace.ps1
+```
 
+4. Upon completion, a ZIP support bundle will be created in:
+
+```
+C:\Users\<username>\Downloads\WinCrashTrace-Bundle-YYYYMMDD-HHMMSS.zip
+```
+
+5. Attach the generated ZIP file to your vendor support case.
+
+---
+
+## Quick Run (One‑Liner)
+
+You can execute **WinCrashTrace** directly from GitHub without downloading the repository first.  
+In an **Administrator PowerShell** window, run:
+
+```powershell
 irm https://raw.githubusercontent.com/Paul1404/WinCrashTrace/refs/heads/main/WinCrashTrace.ps1 | iex
-
 ```
 
+This will download the latest script, run it immediately, and generate the support bundle in your `Downloads` folder.
 
-
-This will:
-
-
-
-\- Download the latest `WinCrashTrace.ps1` from the main branch.  
-
-\- Immediately execute it in your session.  
-
-\- Generate a support bundle ZIP in your `Downloads` folder.  
-
-
-
-Example output location:
-
-
+Example output:
 
 ```
-
-C:\\Users\\<username>\\Downloads\\WinCrashTrace-Bundle-20250922-2330.zip
-
+C:\Users\<username>\Downloads\WinCrashTrace-Bundle-20250922-2330.zip
 ```
 
+### Safer Option: Download & Inspect First
 
-
-> \*\*Note:\*\* For production or audited environments, you may prefer to download and inspect the script first:
-
-
+For production or audited environments, save and inspect the script before running:
 
 ```powershell
-
-irm https://raw.githubusercontent.com/Paul1404/WinCrashTrace/refs/heads/main/WinCrashTrace.ps1 -OutFile .\\WinCrashTrace.ps1
-
-.\\WinCrashTrace.ps1
-
+irm https://raw.githubusercontent.com/Paul1404/WinCrashTrace/refs/heads/main/WinCrashTrace.ps1 -OutFile .\WinCrashTrace.ps1
+.\WinCrashTrace.ps1
 ```
-
-
 
 ---
 
-
-
-\## Features
-
-
-
-\- Collects:
-
-&nbsp; - System information (hardware, BIOS, OS build, uptime)  
-
-&nbsp; - Crash events (Kernel-Power 41, BugCheck 1001, Unexpected Shutdown 6008)  
-
-&nbsp; - Hardware error events (WHEA, HAL, TPM)  
-
-&nbsp; - Crash dump metadata (minidumps and MEMORY.DMP)  
-
-&nbsp; - Driver inventory  
-
-&nbsp; - Installed hotfixes and updates  
-
-
-
-\- Generates:
-
-&nbsp; - \*\*SupportReport.txt\*\* – consolidated human‑readable report with summary and raw logs  
-
-&nbsp; - \*\*CrashEvents.csv\*\* – structured export of crash‑related events  
-
-&nbsp; - \*\*CrashDumps.csv\*\* – dump file metadata  
-
-&nbsp; - \*\*Drivers.csv\*\* – driver list  
-
-&nbsp; - \*\*Hotfixes.csv\*\* – installed updates  
-
-
-
-\- Includes an automatically generated summary section:
-
-&nbsp; - Total crash count  
-
-&nbsp; - First and last crash timestamps  
-
-&nbsp; - Time span covered by events  
-
-&nbsp; - WHEA/hardware error presence  
-
-&nbsp; - BIOS age advisory  
-
-&nbsp; - Presence or absence of crash dumps  
-
-
-
-\- Creates a single ZIP bundle in the user’s \*\*Downloads\*\* folder.
-
-
-
----
-
-
-
-\## Usage
-
-
-
-1\. Download or clone the repository containing `WinCrashTrace.ps1`.
-
-2\. Open PowerShell with Administrator rights.  
-
-&nbsp;  (Recommended: support logs and dump access often require elevation.)
-
-3\. Run:
-
-
-
-```powershell
-
-.\\WinCrashTrace.ps1
+## Example Bundle Contents
 
 ```
-
-
-
-4\. Upon completion, a ZIP bundle will be created in:
-
-
-
-```
-
-C:\\Users\\<username>\\Downloads\\WinCrashTrace-Bundle-YYYYMMDD-HHMMSS.zip
-
-```
-
-
-
-5\. Attach the generated ZIP file to your support case.
-
-
-
----
-
-
-
-\## Example Bundle Contents
-
-
-
-```
-
 WinCrashTrace-Bundle-20250922-2330.zip
-
-&nbsp;├── SupportReport.txt     # Human-readable summary report
-
-&nbsp;├── CrashEvents.csv       # Crash event log
-
-&nbsp;├── CrashDumps.csv        # Dump file metadata
-
-&nbsp;├── Drivers.csv           # Installed driver inventory
-
-&nbsp;└── Hotfixes.csv          # Installed updates
-
+ ├── SupportReport.txt     # Human-readable report with summary + raw logs
+ ├── CrashEvents.csv       # Crash event history
+ ├── CrashDumps.csv        # Dump file metadata
+ ├── Drivers.csv           # Installed driver inventory
+ └── Hotfixes.csv          # Installed updates
 ```
 
+---
 
+## System Requirements
+
+- Windows 10 or Windows 11  
+- PowerShell 5.1 or later (default on Windows 10/11)  
+- Administrator privileges (for crash dump access and full log retrieval)  
 
 ---
 
+## Design Goals
 
-
-\## Design Goals
-
-
-
-\- Single command, no parameters required.  
-
-\- All relevant diagnostics grouped in one archive.  
-
-\- Vendor support–ready output, with both human‑readable and structured formats.  
-
-\- Minimal dependencies (uses built‑in PowerShell cmdlets only).
-
-
+- Single command execution, no parameters needed  
+- Focused on vendor support diagnostics (“sosreport”‑like for Windows)  
+- Human‑readable + machine‑readable outputs  
+- No external dependencies; works with built‑in PowerShell cmdlets  
 
 ---
 
+## License
 
-
-\## Requirements
-
-
-
-\- Windows 10 or Windows 11.  
-
-\- PowerShell 5.1 or later (included by default).  
-
-\- Administrator privileges for full access to system logs and dumps.
-
-
-
----
-
-
-
-\## License
-
-
-
-MIT License. See LICENSE file for details.
-
+MIT License. See LICENSE for more details.
