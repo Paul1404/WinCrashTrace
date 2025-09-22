@@ -11,7 +11,7 @@
   ZIP file in Downloads folder (WinCrashTrace-Bundle-YYYYMMDD-HHMMSS.zip)
 
 .AUTHOR
-  Paul Dresch & T3 Chat
+  Paul Dresch
 #>
 
 [CmdletBinding()]
